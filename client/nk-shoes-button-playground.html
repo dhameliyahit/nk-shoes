@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f5f5f5" />
+  <title>NK-SHOES — Button Design System</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --nk-ink: #080808;
+      --nk-white: #ffffff;
+      --nk-page: #f5f5f5;
+      --nk-muted: #737373;
+      --nk-border: #e7e7e7;
+      --nk-accent: #d94b2b;
+      --nk-accent-hover: #bd3d23;
+      --nk-font: "Inter", sans-serif;
+      --nk-display: "Bebas Neue", sans-serif;
+      --nk-motion: 250ms ease;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 48px 20px 72px;
+      background: var(--nk-page);
+      color: var(--nk-ink);
+      font-family: var(--nk-font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button { font: inherit; }
+
+    .page {
+      width: min(100%, 980px);
+      margin: 0 auto;
+    }
+
+    .page-header { margin-bottom: 34px; }
+
+    .brand {
+      margin: 0;
+      font: 52px/0.95 var(--nk-display);
+      letter-spacing: 2px;
+    }
+
+    .intro {
+      margin: 10px 0 0;
+      color: var(--nk-muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .demo {
+      margin: 18px 0;
+      padding: 26px;
+      background: var(--nk-white);
+      border: 1px solid var(--nk-border);
+    }
+
+    .demo-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .demo-heading h2 {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+    }
+
+    .demo-heading span {
+      color: var(--nk-muted);
+      font-size: 11px;
+    }
+
+    .preview {
+      min-height: 104px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    /* Shared reusable button base */
+    .nk-btn {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 54px;
+      padding: 0 20px;
+      border: 1px solid var(--nk-ink);
+      border-radius: 0;
+      background: var(--nk-ink);
+      color: var(--nk-white);
+      font-family: var(--nk-font);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      line-height: 1;
+      text-align: left;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 var(--nk-white), 4px 4px 0 var(--nk-ink);
+      transition:
+        transform 220ms ease,
+        box-shadow 220ms ease,
+        background-color 220ms ease,
+        color 220ms ease,
+        border-color 220ms ease;
+    }
+
+    .nk-btn:focus-visible {
+      outline: 2px solid var(--nk-accent);
+      outline-offset: 6px;
+    }
+
+    .nk-btn:disabled,
+    .nk-btn[aria-disabled="true"] {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .nk-btn__label,
+    .nk-btn__icon {
+      position: relative;
+      z-index: 2;
+    }
+
+    .nk-btn__icon {
+      display: inline-flex;
+      width: 28px;
+      height: 30px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      transition: transform 250ms ease;
+    }
+
+    .nk-btn__icon svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .nk-btn:hover:not(:disabled) .nk-btn__icon {
+      transform: translateY(-2px);
+    }
+
+    .nk-btn:active:not(:disabled) {
+      transform: translate(2px, 2px);
+      box-shadow: none;
+    }
+
+    /* Variant 1: signature Add to Bag with shine and offset edge */
+    .nk-btn--bag {
+      min-height: 60px;
+      padding: 0 17px;
+      font-size: 15px;
+      box-shadow: 3px 3px 0 var(--nk-white), 4px 4px 0 var(--nk-ink);
+    }
+
+    .nk-btn--bag::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      top: -50%;
+      left: -65%;
+      width: 35%;
+      height: 200%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgb(255 255 255 / 28%),
+        transparent
+      );
+      transform: skewX(-22deg);
+      transition: left 650ms ease;
+      pointer-events: none;
+    }
+
+    .nk-btn--bag:hover:not(:disabled)::before { left: 135%; }
+
+    .nk-btn--bag:hover:not(:disabled) {
+      background: #191919;
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0 var(--nk-white), 5px 5px 0 var(--nk-ink);
+    }
+
+    .nk-btn--bag:active:not(:disabled) {
+      transform: translate(2px, 2px);
+      box-shadow: none;
+    }
+
+    /* Variant 2: sliding background fill */
+    .nk-btn--slide {
+      justify-content: center;
+    }
+
+    .nk-btn--slide::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      background: var(--nk-white);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 300ms cubic-bezier(.7, 0, .2, 1);
+    }
+
+    .nk-btn--slide:hover:not(:disabled) {
+      color: var(--nk-ink);
+    }
+
+    .nk-btn--slide:hover:not(:disabled)::before { transform: scaleX(1); }
+
+    /* Variant 3: diagonal reveal */
+    .nk-btn--diagonal {
+      background: transparent;
+      color: var(--nk-ink);
+      box-shadow: 3px 3px 0 var(--nk-page), 4px 4px 0 var(--nk-ink);
+    }
+
+    .nk-btn--diagonal::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      background: var(--nk-ink);
+      clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+      transition: clip-path 350ms cubic-bezier(.7, 0, .2, 1);
+    }
+
+    .nk-btn--diagonal:hover:not(:disabled) { color: var(--nk-white); }
+
+    .nk-btn--diagonal:hover:not(:disabled)::before {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    /* Variant 4: accent sweep */
+    .nk-btn--accent {
+      border-color: var(--nk-accent);
+      background: var(--nk-ink);
+      color: var(--nk-white);
+      box-shadow: 3px 3px 0 var(--nk-white), 4px 4px 0 var(--nk-accent);
+    }
+
+    .nk-btn--accent::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      background: var(--nk-accent);
+      transform: translateY(102%);
+      transition: transform 280ms ease;
+    }
+
+    .nk-btn--accent:hover:not(:disabled) {
+      border-color: var(--nk-accent);
+    }
+
+    .nk-btn--accent:hover:not(:disabled)::before { transform: translateY(0); }
+
+    /* Variant 5: outline / bottom fill */
+    .nk-btn--outline {
+      background: var(--nk-white);
+      color: var(--nk-ink);
+      box-shadow: 3px 3px 0 var(--nk-page), 4px 4px 0 var(--nk-ink);
+    }
+
+    .nk-btn--outline::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      background: var(--nk-ink);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 280ms ease;
+    }
+
+    .nk-btn--outline:hover:not(:disabled) { color: var(--nk-white); }
+
+    .nk-btn--outline:hover:not(:disabled)::before { transform: scaleY(1); }
+
+    /* Icon arrow movement */
+    .nk-btn--arrow .nk-btn__icon {
+      font-size: 20px;
+    }
+
+    .nk-btn--arrow:hover:not(:disabled) .nk-btn__icon {
+      transform: translateX(5px);
+    }
+
+    /* Full width commerce action */
+    .nk-btn--block { width: 100%; }
+
+    /* Compact quick-add action */
+    .nk-btn--compact {
+      min-height: 44px;
+      padding: 0 14px;
+      font-size: 13px;
+      gap: 12px;
+    }
+
+    .code-note {
+      margin: 14px 0 0;
+      color: var(--nk-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 30px 14px 48px; }
+      .brand { font-size: 44px; }
+      .demo { padding: 20px 16px; }
+      .preview { align-items: stretch; flex-direction: column; }
+      .preview .nk-btn { width: 100%; }
+      .demo-heading { align-items: flex-start; flex-direction: column; gap: 5px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <header class="page-header">
+      <h1 class="brand">NK-SHOES</h1>
+      <p class="intro">A reusable button system for a modern footwear brand. Hover or tap to test each interaction.</p>
+    </header>
+
+    <section class="demo">
+      <div class="demo-heading">
+        <h2>01 — Signature Add to Bag</h2>
+        <span>Primary shopping action</span>
+      </div>
+      <div class="preview">
+        <button class="nk-btn nk-btn--bag nk-btn--block" type="button">
+          <span class="nk-btn__label">Add to bag</span>
+          <span class="nk-btn__icon" aria-hidden="true">
+            <svg viewBox="0 0 32 34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+              <path d="M5 11h22v20H5z"/>
+              <path d="M10 11V7a6 6 0 0 1 12 0v4"/>
+              <circle cx="25" cy="27" r="6" fill="#080808"/>
+              <path d="M25 24v6M22 27h6"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+      <p class="code-note">Offset edge, subtle shine sweep and a small bag lift. Keep this as the signature product-page CTA.</p>
+    </section>
+
+    <section class="demo">
+      <div class="demo-heading">
+        <h2>02 — Sliding Fill</h2>
+        <span>Shop / Buy actions</span>
+      </div>
+      <div class="preview">
+        <button class="nk-btn nk-btn--slide nk-btn--arrow" type="button">
+          <span class="nk-btn__label">Shop now</span>
+          <span class="nk-btn__icon" aria-hidden="true">↗</span>
+        </button>
+        <button class="nk-btn nk-btn--slide nk-btn--arrow" type="button">
+          <span class="nk-btn__label">Buy now</span>
+          <span class="nk-btn__icon" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="demo">
+      <div class="demo-heading">
+        <h2>03 — Diagonal Reveal</h2>
+        <span>Editorial / collection links</span>
+      </div>
+      <div class="preview">
+        <button class="nk-btn nk-btn--diagonal nk-btn--arrow" type="button">
+          <span class="nk-btn__label">Explore collection</span>
+          <span class="nk-btn__icon" aria-hidden="true">↗</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="demo">
+      <div class="demo-heading">
+        <h2>04 — Accent Sweep</h2>
+        <span>Promotional action</span>
+      </div>
+      <div class="preview">
+        <button class="nk-btn nk-btn--accent nk-btn--arrow" type="button">
+          <span class="nk-btn__label">Discover offers</span>
+          <span class="nk-btn__icon" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="demo">
+      <div class="demo-heading">
+        <h2>05 — Outline Fill</h2>
+        <span>Secondary action</span>
+      </div>
+      <div class="preview">
+        <button class="nk-btn nk-btn--outline nk-btn--arrow" type="button">
+          <span class="nk-btn__label">View details</span>
+          <span class="nk-btn__icon" aria-hidden="true">↗</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="demo">
+      <div class="demo-heading">
+        <h2>06 — Compact Quick Add</h2>
+        <span>Product card action</span>
+      </div>
+      <div class="preview">
+        <button class="nk-btn nk-btn--bag nk-btn--compact" type="button">
+          <span class="nk-btn__label">Quick add</span>
+          <span class="nk-btn__icon" aria-hidden="true">+</span>
+        </button>
+        <button class="nk-btn nk-btn--bag nk-btn--compact" type="button" disabled>
+          <span class="nk-btn__label">Out of stock</span>
+          <span class="nk-btn__icon" aria-hidden="true">—</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="demo">
+      <div class="demo-heading">
+        <h2>07 — Checkout</h2>
+        <span>Full-width commerce action</span>
+      </div>
+      <div class="preview">
+        <button class="nk-btn nk-btn--bag nk-btn--block" type="button">
+          <span class="nk-btn__label">Proceed to checkout</span>
+          <span class="nk-btn__icon" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

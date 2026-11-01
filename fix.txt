@@ -1,0 +1,16 @@
+1. make admin side bar fixed
+2. in order page two optoin PrePaid & COD also this mnagebl by admin from both what suggest for prepaid enable phonepe paymentgetway 
+3. category model CREATE NEW CATEGORY make !text-white
+4. for soupo if i want to add coupon for only new user how can add add this feautre and display coupons only for new use have
+5. for annoum=smen tbar populate coupon to display 
+6. token add acces 7d and refesh login add 14d make sure when ever se dont' want not logout or expire token okay
+7. in annusmen tbar we timer also in add timer also in annousment bar in setting add date seleter bsed on that display in annusmen tright
+8. save for laternot wokring and make sure this also add in whiist dont remove from cart and make it stay 
+9. in login remove this dev code and make product i my ke sso remove this dev code dipsplay also also check test is if user register dont dont very and login and register also but reidretc resend otp and ask to check this email and enter otp
+10. remove this label like enter vaild 10didgit indina number simple add enter vaild number in checkout remove lable veriy indina post check veriy pintcode and addlike that remove indina post veridt sime veriftd okay
+11. in checkout i see prepaid , cod, instand upi payment, card why this two extra add remove this okay and  also see if cod disbale now display as diable but if not acitve no need to display remove 
+12. for phonepe add setitn glevel config to add dat make as ench and secure okay also admin side add config to change sanboc to prod and it wokrs correct just need keys change and envimtnet chnage from admin our real word payment wokring like that add config
+
+13. if order is complete and dprint recipt add correct infomtion now justa d but crete separe invoice enter ll info  whatvery buy that products and all correct correct deatils
+1 lays for customer conect infotion and email contnet add bu admin so we can see and display make like this 
+ 

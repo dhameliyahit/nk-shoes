@@ -1,0 +1,217 @@
+/* =========================================================
+   NK-SHOES ANNOUNCEMENT BAR COMPONENT STYLES
+   ========================================================= */
+
+.announcement {
+  --base-font: "Inter", sans-serif;
+  --small-font: 0.75rem;
+  --normal-font: 0.875rem;
+  --medium-font: 1.125rem;
+  --primary-color: #FA003F;
+  --secondary-color: #ffffff;
+  --base-padding: 0.5rem;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--primary-color);
+  font-family: var(--base-font), sans-serif;
+  padding: var(--base-padding);
+  z-index: 50;
+  width: 100%;
+  transition: all 0.25s ease;
+}
+
+@media (max-width: 768px) {
+  .announcement {
+    flex-wrap: wrap;
+    padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+    gap: 0.25rem;
+  }
+  .announcement.dock-mobile {
+    flex-direction: column-reverse;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 50;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+  }
+}
+
+@media print {
+  .announcement {
+    display: none !important;
+  }
+}
+
+.announcement .text {
+  padding: 0 1rem;
+  color: var(--secondary-color);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .announcement .text {
+    padding-bottom: var(--base-padding);
+  }
+}
+
+.announcement input,
+.announcement button.copy-btn {
+  font-family: var(--base-font);
+  font-size: var(--small-font);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: var(--base-padding) 0.75rem;
+  border: 2px dashed var(--secondary-color);
+  height: 36px;
+  box-sizing: border-box;
+}
+
+.announcement input {
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  text-align: center;
+  border-right: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  width: 125px;
+  outline: none;
+}
+
+.announcement button.copy-btn {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  cursor: pointer;
+  box-shadow: none;
+  border-radius: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: opacity 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.announcement button.copy-btn:hover {
+  opacity: 0.92;
+}
+
+.announcement #timer {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  padding: var(--base-padding) 0.75rem;
+  margin-left: 1rem;
+  min-width: 140px;
+  text-align: center;
+  border: 1px dashed var(--secondary-color);
+  margin-right: 2.5rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.announcement .coupon {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .announcement .coupon {
+    margin: 0.5rem auto;
+  }
+  .announcement #timer {
+    margin: 0 0 0.5rem 0;
+  }
+}
+
+/* Close button */
+.announcement .close {
+  cursor: pointer;
+  position: absolute;
+  top: -2.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0;
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  border: none;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+@media (min-width: 769px) {
+  .announcement .close {
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    left: inherit;
+    right: 0.75rem;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    height: 28px;
+    width: 28px;
+    box-shadow: none;
+  }
+}
+
+.announcement .close:hover {
+  opacity: 0.85;
+}
+
+.announcement .tooltip {
+  position: relative;
+  display: inline-block;
+  color: var(--secondary-color);
+}
+
+.announcement .tooltip .tooltiptext {
+  visibility: hidden;
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  background-color: #222222;
+  color: #ffffff;
+  width: 140px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 4px;
+  padding: 5px 8px;
+  margin-left: -70px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 20;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.announcement .tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.announcement .tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #222222 transparent transparent transparent;
+}

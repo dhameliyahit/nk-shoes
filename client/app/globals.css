@@ -1,0 +1,773 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://db.onlinewebfonts.com/c/029671d155823774844391a629b3ae3e?family=adineue+PRO');
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'adineue_PRO';
+  src: url('https://db.onlinewebfonts.com/t/029671d155823774844391a629b3ae3e.woff2') format('woff2'),
+       url('https://db.onlinewebfonts.com/t/029671d155823774844391a629b3ae3e.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'adineue_PRO';
+  src: url('https://db.onlinewebfonts.com/t/029671d155823774844391a629b3ae3e.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Swiper Core & Module Styles */
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+@import "swiper/css/autoplay";
+@import "swiper/css/thumbs";
+@import "swiper/css/free-mode";
+
+/* Studio Photography Showroom Styles */
+.studio-showroom-canvas {
+  background: radial-gradient(ellipse at 50% 40%, #ffffff 0%, #f6f6f6 55%, #eaeaea 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.studio-contact-shadow {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 72%;
+  height: 24px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.08) 50%, transparent 75%);
+  filter: blur(5px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.studio-shoe-enhancer {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  filter: contrast(1.05) saturate(1.06) brightness(1.01) drop-shadow(0 18px 26px rgba(0, 0, 0, 0.13));
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Nike / Adidas Style Swiper Pagination Pill */
+.studio-gallery-swiper .swiper-pagination {
+  bottom: 12px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  z-index: 20;
+}
+
+.studio-gallery-swiper .swiper-pagination-bullet {
+  width: 6px;
+  height: 6px;
+  background: #a0a0a0;
+  opacity: 0.6;
+  border-radius: 9999px;
+  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  margin: 0 !important;
+}
+
+.studio-gallery-swiper .swiper-pagination-bullet-active {
+  width: 22px;
+  height: 6px;
+  background: #111111;
+  opacity: 1;
+  border-radius: 9999px;
+}
+
+:root {
+  /* Brand Core Palette */
+  --nk-black: #080808;
+  --nk-primary: #111111;
+  --nk-white: #ffffff;
+  --nk-secondary: #626262;
+  --nk-muted: #777777;
+  --nk-surface: #f6f6f6;
+  --nk-border: #e9e9e9;
+
+  /* Accent Sale */
+  --nk-sale: #c83224;
+  --nk-sale-hover: #a52a20;
+
+  /* Legacy & Theme Mapping */
+  --background: var(--nk-white);
+  --foreground: var(--nk-primary);
+  --muted: var(--nk-muted);
+  --surface: var(--nk-surface);
+  --border: var(--nk-border);
+
+  /* Typography: Brand logo retains Barlow Condensed, all other text uses adineue_PRO */
+  --font-brand: "Barlow Condensed", sans-serif;
+  --font-sans: "adineue_PRO", "adineue PRO", "AdihausDIN", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Radius & Transitions */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-full: 9999px;
+  --transition-smooth: 250ms cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Global Animation & Timing Tokens */
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --anim-fast: 150ms var(--ease-expo);
+  --anim-normal: 250ms var(--ease-expo);
+  --anim-slow: 350ms var(--ease-expo);
+}
+
+@theme inline {
+  --color-black: var(--nk-black);
+  --color-foreground: var(--nk-primary);
+  --color-white: var(--nk-white);
+  --color-secondary: var(--nk-secondary);
+  --color-muted: var(--nk-muted);
+  --color-surface: var(--nk-surface);
+  --color-border: var(--nk-border);
+  --color-sale: var(--nk-sale);
+  --color-sale-hover: var(--nk-sale-hover);
+  --font-brand: var(--font-brand);
+  --font-sans: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: var(--nk-white);
+  color: var(--nk-primary);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  max-width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--nk-primary);
+  letter-spacing: -0.01em;
+}
+
+button, input, select, textarea {
+  font-family: var(--font-sans);
+}
+
+/* =========================================================
+   REUSABLE BRAND & UI SYSTEM CLASSES
+   ========================================================= */
+
+/* Standard Container (Bootstrap & Tailwind Style) */
+.container,
+.container-custom {
+  width: 100%;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .container,
+  .container-custom {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .container,
+  .container-custom {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container,
+  .container-custom {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .container,
+  .container-custom {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+/* Standard Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--nk-black);
+  color: var(--nk-white);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--radius-full);
+  transition: background-color 200ms ease, transform 200ms ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.btn-primary:hover:not(:disabled) {
+  background-color: #222222;
+  transform: translateY(-1px);
+}
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--nk-surface);
+  color: var(--nk-primary);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--radius-full);
+  transition: background-color 200ms ease, border-color 200ms ease;
+  cursor: pointer;
+  border: 1px solid var(--nk-border);
+}
+.btn-secondary:hover:not(:disabled) {
+  background-color: #ebebeb;
+  border-color: #d8d8d8;
+}
+.btn-secondary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: transparent;
+  color: var(--nk-black);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--nk-black);
+  transition: background-color 200ms ease, color 200ms ease;
+  cursor: pointer;
+}
+.btn-outline:hover:not(:disabled) {
+  background-color: var(--nk-black);
+  color: var(--nk-white);
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  color: var(--nk-black);
+  transition: background-color 200ms ease, transform 200ms ease;
+  cursor: pointer;
+  border: none;
+}
+.btn-icon:hover:not(:disabled) {
+  background-color: var(--nk-surface);
+  transform: translateY(-1px);
+}
+
+/* Product Badges */
+.badge-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-sm);
+}
+.badge-new {
+  background-color: var(--nk-black);
+  color: var(--nk-white);
+}
+.badge-sale {
+  background-color: var(--nk-sale);
+  color: var(--nk-white);
+}
+.badge-muted {
+  background-color: var(--nk-surface);
+  color: var(--nk-secondary);
+  border: 1px solid var(--nk-border);
+}
+
+/* Product Card Styling */
+.card-product {
+  position: relative;
+  background-color: var(--nk-white);
+  transition: transform 250ms ease;
+  overflow: hidden;
+}
+.card-product-image {
+  background-color: var(--nk-surface);
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  border-radius: var(--radius-sm);
+}
+.card-product-image img {
+  transition: transform 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-product:hover .card-product-image img {
+  transform: scale(1.05);
+}
+
+/* Minimal Form Inputs */
+.input-minimal {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background-color: var(--nk-surface);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--nk-primary);
+  font-size: 0.875rem;
+  transition: background-color 200ms ease, border-color 200ms ease;
+  outline: none;
+}
+.input-minimal:focus {
+  background-color: var(--nk-white);
+  border-color: var(--nk-black);
+}
+
+/* Scrollbar Utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* =========================================================
+   NK-SHOES SIGNATURE BUTTON DESIGN SYSTEM (From Playground)
+   ========================================================= */
+
+.nk-btn {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 54px;
+  padding: 0 20px;
+  border: 1px solid var(--nk-black);
+  border-radius: 0;
+  background: var(--nk-black);
+  color: var(--nk-white);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  line-height: 1;
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--nk-white), 4px 4px 0 var(--nk-black);
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease,
+    color 220ms ease,
+    border-color 220ms ease;
+}
+
+.nk-btn:focus-visible {
+  outline: 2px solid var(--nk-black);
+  outline-offset: 4px;
+}
+
+.nk-btn:disabled,
+.nk-btn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.nk-btn__label,
+.nk-btn__icon {
+  position: relative;
+  z-index: 2;
+}
+
+.nk-btn__icon {
+  display: inline-flex;
+  width: 28px;
+  height: 30px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  transition: transform 250ms ease;
+}
+
+.nk-btn__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.nk-btn:hover:not(:disabled) .nk-btn__icon {
+  transform: translateY(-2px);
+}
+
+.nk-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* Variant: Signature Add to Bag */
+.nk-btn--bag {
+  min-height: 60px;
+  padding: 0 17px;
+  font-size: 15px;
+  box-shadow: 3px 3px 0 var(--nk-white), 4px 4px 0 var(--nk-black);
+}
+
+.nk-btn--bag::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -50%;
+  left: -65%;
+  width: 35%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.28),
+    transparent
+  );
+  transform: skewX(-22deg);
+  transition: left 650ms ease;
+  pointer-events: none;
+}
+
+.nk-btn--bag:hover:not(:disabled)::before {
+  left: 135%;
+}
+
+.nk-btn--bag:hover:not(:disabled) {
+  background: #191919;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--nk-white), 5px 5px 0 var(--nk-black);
+}
+
+.nk-btn--bag:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* Variant: Slide */
+.nk-btn--slide {
+  justify-content: center;
+}
+.nk-btn--slide::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: var(--nk-white);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 300ms cubic-bezier(0.7, 0, 0.2, 1);
+}
+.nk-btn--slide:hover:not(:disabled) {
+  color: var(--nk-black);
+}
+.nk-btn--slide:hover:not(:disabled)::before {
+  transform: scaleX(1);
+}
+
+/* Variant: Diagonal Reveal */
+.nk-btn--diagonal {
+  background: transparent;
+  color: var(--nk-black);
+  box-shadow: 3px 3px 0 var(--nk-surface), 4px 4px 0 var(--nk-black);
+}
+.nk-btn--diagonal::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: var(--nk-black);
+  clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  transition: clip-path 350ms cubic-bezier(0.7, 0, 0.2, 1);
+}
+.nk-btn--diagonal:hover:not(:disabled) {
+  color: var(--nk-white);
+}
+.nk-btn--diagonal:hover:not(:disabled)::before {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Variant: Accent */
+.nk-btn--accent {
+  border-color: var(--nk-sale);
+  background: var(--nk-black);
+  color: var(--nk-white);
+  box-shadow: 3px 3px 0 var(--nk-white), 4px 4px 0 var(--nk-sale);
+}
+.nk-btn--accent::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: var(--nk-sale);
+  transform: translateY(102%);
+  transition: transform 280ms ease;
+}
+.nk-btn--accent:hover:not(:disabled)::before {
+  transform: translateY(0);
+}
+
+/* Variant: Outline */
+.nk-btn--outline {
+  background: var(--nk-white);
+  color: var(--nk-black);
+  box-shadow: 3px 3px 0 var(--nk-surface), 4px 4px 0 var(--nk-black);
+}
+.nk-btn--outline::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: var(--nk-black);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 280ms ease;
+}
+.nk-btn--outline:hover:not(:disabled) {
+  color: var(--nk-white);
+}
+.nk-btn--outline:hover:not(:disabled)::before {
+  transform: scaleY(1);
+}
+
+/* Icon & sizing modifiers */
+.nk-btn--arrow .nk-btn__icon {
+  font-size: 20px;
+}
+.nk-btn--arrow:hover:not(:disabled) .nk-btn__icon {
+  transform: translateX(5px);
+}
+.nk-btn--block {
+  width: 100%;
+}
+.nk-btn--compact {
+  min-height: 44px;
+  padding: 0 14px;
+  font-size: 13px;
+  gap: 12px;
+}
+
+/* =========================================================
+   GLOBAL ANIMATIONS & TRANSITIONS (Modals, Drawers, Search)
+   ========================================================= */
+
+@keyframes nkFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes nkFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes nkSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nkSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nkDrawerLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes nkDrawerRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes nkModalScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.nk-fade-in {
+  animation: nkFadeIn var(--anim-normal) forwards;
+}
+
+.nk-fade-out {
+  animation: nkFadeOut var(--anim-fast) forwards;
+}
+
+.nk-slide-down {
+  animation: nkSlideDown var(--anim-normal) forwards;
+}
+
+.nk-slide-up {
+  animation: nkSlideUp var(--anim-normal) forwards;
+}
+
+.nk-drawer-left {
+  animation: nkDrawerLeft var(--anim-slow) forwards;
+}
+
+.nk-drawer-right {
+  animation: nkDrawerRight var(--anim-slow) forwards;
+}
+
+.nk-modal-scale {
+  animation: nkModalScale var(--anim-normal) forwards;
+}
+
+.nk-backdrop {
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: nkFadeIn var(--anim-fast) forwards;
+}
+
+/* Smart Hide-on-Scroll Header Animations (.moveon / .moveout) */
+.header-smart-scroll {
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 250ms ease;
+  will-change: transform;
+}
+
+.header-smart-scroll.moveon {
+  transform: translateY(0);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Footer 3D Social Flip & Menu Hover Animation */
+.social-icon-flip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 400ms ease-in-out, color 200ms ease;
+  perspective: 1000px;
+}
+.social-icon-flip:hover {
+  transform: rotateY(180deg);
+  color: #E53E3E;
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
