@@ -22,7 +22,7 @@ Thumbs.db
 .vscode/
 .idea/
 .antigravity/
-
+fix.txt
 # Environment files
 .env
 .env.local
