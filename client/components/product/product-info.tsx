@@ -342,6 +342,10 @@ export function ProductInfo({
           }}
           className="h-11 min-h-[44px] w-full"
         />
+        <div className="flex items-center justify-center gap-1.5 pt-1 text-[11px] text-[#075E54] font-bold">
+          <span className="inline-block w-2 h-2 rounded-full bg-[#25D366] animate-pulse" />
+          <span>Live Video Call Product Demo Available on WhatsApp</span>
+        </div>
       </div>
 
       {/* 8. PINCODE DELIVERY ESTIMATE CHECKER */}

@@ -61,18 +61,20 @@ export function WhatsAppOrderButton({
           : `https://nkshoes.in/products/${product.slug}`;
 
       message = [
-        `*Hello NK-SHOES Jamnagar!* 👋`,
-        `I would like to place an order via WhatsApp:`,
+        `*Hello NK-SHOES Jamnagar!*`,
+        `I would like to inquire / order this pair via WhatsApp:`,
         ``,
-        `👟 *Product:* ${product.name}`,
-        selectedSize ? `📏 *Size:* ${selectedSize}` : `📏 *Size:* (Please advise on sizing)`,
-        selectedColor ? `🎨 *Colour:* ${selectedColor}` : ``,
-        `🔢 *Quantity:* ${quantity}`,
-        `💰 *Price:* ₹${total.toLocaleString("en-IN")} (₹${unitPrice.toLocaleString("en-IN")} each)`,
-        `🔗 *Product Link:* ${productUrl}`,
+        `* Product: ${product.name}`,
+        selectedSize ? `* Size: ${selectedSize}` : `* Size: (Please advise on available sizes)`,
+        selectedColor ? `* Colour: ${selectedColor}` : ``,
+        `* Quantity: ${quantity}`,
+        `* Price: Rs ${total.toLocaleString("en-IN")} (Rs ${unitPrice.toLocaleString("en-IN")} each)`,
+        `* Link: ${productUrl}`,
         ``,
-        `📍 *Store:* NK-SHOES, Super Market, Near Teen Batti, Jamnagar`,
-        `Please confirm availability & delivery details. Thank you!`,
+        `* Video Call Demo: Available on request from Jamnagar showroom`,
+        `* Store: NK-SHOES, Super Market, Near Teen Batti, Jamnagar`,
+        ``,
+        `Please confirm availability and dispatch details. Thank you!`,
       ]
         .filter(Boolean)
         .join("\n");
@@ -82,47 +84,49 @@ export function WhatsAppOrderButton({
       const itemsList = items
         .map(
           (item, idx) =>
-            `${idx + 1}. *${item.product?.name || "Footwear"}*\n   Size: ${item.size}${item.color ? ` | Col: ${item.color}` : ""}\n   Qty: ${item.quantity} × ₹${item.price.toLocaleString("en-IN")}`
+            `${idx + 1}. *${item.product?.name || "Footwear"}*\n   Size: ${item.size}${item.color ? ` | Colour: ${item.color}` : ""}\n   Qty: ${item.quantity} x Rs ${item.price.toLocaleString("en-IN")}`
         )
         .join("\n");
 
       const customerDetails =
         customer?.fullName || customer?.phone || customer?.city
           ? [
-              `👤 *Customer:* ${customer.fullName || "Valued Customer"}`,
-              customer.phone ? `📞 *Phone:* ${customer.phone}` : "",
-              customer.address ? `🏠 *Address:* ${customer.address}` : "",
+              customer.fullName ? `* Name: ${customer.fullName}` : `* Name: Valued Customer`,
+              customer.phone ? `* Phone: ${customer.phone}` : "",
+              customer.address ? `* Address: ${customer.address}` : "",
               customer.city && customer.pincode
-                ? `📍 *City / PIN:* ${customer.city}, ${customer.state || ""} - ${customer.pincode}`
+                ? `* City / PIN: ${customer.city}, ${customer.state || ""} - ${customer.pincode}`
                 : "",
             ]
               .filter(Boolean)
               .join("\n")
-          : `(Address will be provided in chat)`;
+          : `(Delivery address will be provided in chat)`;
 
       message = [
-        `*Hello NK-SHOES Jamnagar!* 👋`,
+        `*Hello NK-SHOES Jamnagar!*`,
         `I want to place my order directly via WhatsApp:`,
         ``,
-        `🛒 *ORDER SUMMARY (${items.length} item${items.length > 1 ? "s" : ""}):*`,
+        `*ORDER SUMMARY (${items.length} item${items.length > 1 ? "s" : ""}):*`,
         itemsList,
         ``,
-        `💵 *Subtotal:* ₹${subtotal.toLocaleString("en-IN")}`,
-        discountAmount > 0 ? `🏷️ *Discount:* -₹${discountAmount.toLocaleString("en-IN")}` : "",
-        `🚚 *Shipping:* ${shippingFee === 0 ? "FREE" : `₹${shippingFee}`}`,
-        `💳 *Total Payable:* ₹${total.toLocaleString("en-IN")}`,
+        `* Subtotal: Rs ${subtotal.toLocaleString("en-IN")}`,
+        discountAmount > 0 ? `* Discount: -Rs ${discountAmount.toLocaleString("en-IN")}` : "",
+        `* Shipping: ${shippingFee === 0 ? "FREE" : `Rs ${shippingFee}`}`,
+        `* Total Payable: Rs ${total.toLocaleString("en-IN")}`,
         ``,
-        `📦 *DELIVERY DETAILS:*`,
+        `*DELIVERY DETAILS:*`,
         customerDetails,
         ``,
-        `Please confirm my order and send payment / COD dispatch confirmation.`,
+        `* Video Call Demo: Available on request from Jamnagar showroom`,
+        `Please confirm my order and send payment / COD dispatch confirmation. Thank you!`,
       ]
         .filter(Boolean)
         .join("\n");
     }
 
     const cleanPhone = phoneNumber.replace(/[^0-9]/g, "");
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+    const encodedText = encodeURIComponent(message.trim());
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedText}`;
 
     if (typeof window !== "undefined") {
       window.open(whatsappUrl, "_blank", "noopener,noreferrer");
