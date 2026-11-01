@@ -63,35 +63,48 @@ We stand by the craftsmanship of every shoe we engineer. If your kicks do not fi
     isPublished: true,
   },
   {
-    title: "Brand Story & Heritage",
+    title: "About NK-SHOES Jamnagar & Heritage",
     slug: "about",
     category: "Company",
-    excerpt: "Born from high-tempo track roads and raw street energy. Learn about NK-SHOES.",
+    excerpt: "Jamnagar's premier athletic footwear retail store, now delivering authentic kicks and sneakers online across India at nkshoes.in.",
+    displayDate: "01 Nov 2026",
+    subtitle: "From Jamnagar's Main Street to Doorsteps Across India",
     content: `
-# About NK-SHOES
+# About NK-SHOES — Jamnagar's Premier Footwear Store
 
-NK-SHOES was founded with a singular relentless vision: to engineer high-performance athletic footwear and raw streetwear kicks that dominate the road.
+**NK-SHOES** began as a physical retail footwear store located in the commercial heart of **Jamnagar, Gujarat**. For years, local athletes, runners, gym-goers, and sneaker enthusiasts in Jamnagar have trusted our physical showroom for 100% authentic, high-performance athletic footwear and trending street sneakers.
 
-Every silhouette blends responsive energy return foam, Continental traction compounds, and high-tensile engineered breathable uppers designed specifically for the demanding climate and terrain of modern athletes.
+Today, through **nkshoes.in**, we bring that trusted Jamnagar in-store shopping experience directly to your doorstep anywhere in India.
 
-We do not compromise on durability, speed, or brutalist monochrome aesthetic.
+### Why Choose NK-SHOES Jamnagar?
+- **Real Physical Retail Presence:** We are not a faceless dropshipper. You can visit our retail store in Jamnagar anytime, try shoes on, or speak to our team.
+- **100% Genuine Footwear:** Every sneaker is personally inspected by our retail staff before shipping.
+- **Fast Express All-India Shipping:** Orders dispatched daily directly from our Jamnagar hub.
+- **Cash on Delivery (COD) & Easy Doorstep Returns:** Try with complete peace of mind with 7-day hassle-free size exchanges.
     `,
     isPublished: true,
   },
   {
-    title: "Contact Customer Care",
+    title: "Contact & Store Location",
     slug: "contact",
     category: "Support",
-    excerpt: "Reach out to our dedicated support crew for assistance with orders, sizing, or store queries.",
+    excerpt: "Visit our physical shoe showroom in Jamnagar or reach our customer care team across India.",
+    displayDate: "01 Nov 2026",
+    subtitle: "Jamnagar Retail Showroom & Online Support",
     content: `
-# Contact NK-SHOES Support Crew
+# Visit NK-SHOES in Jamnagar & Contact Us
 
-Our customer care team operates Monday through Saturday, 9:00 AM to 7:00 PM IST.
+Whether you want to try shoes in person at our physical shop in Jamnagar or have questions regarding an online order on **nkshoes.in**, our dedicated team is here to assist you.
 
-- **Email Support:** support@nk-shoes.in
-- **Customer Helpline:** +91 (800) 445-6677
-- **Headquarters:** NK-SHOES India Performance Hub, 42 Industrial Corridor, Bengaluru, Karnataka 560001
-- **Live Order Support:** Available 24/7 through your Customer Account portal.
+### Jamnagar Retail Showroom Address
+- **Store Location:** NK-SHOES, Ground Floor, Super Market Complex, Near Teen Batti, Jamnagar, Gujarat - 361001, India.
+- **Store Hours:** Monday to Saturday: 10:00 AM – 9:30 PM | Sunday: 11:00 AM – 8:00 PM IST.
+- **Store Phone / WhatsApp:** +91 97243 13238
+
+### Online Support (nkshoes.in)
+- **Official Website:** [https://nkshoes.in](https://nkshoes.in)
+- **Email Support:** support@nkshoes.in
+- **Order Tracking:** Track your parcel 24/7 through your [Account Dashboard](/profile?tab=orders).
     `,
     isPublished: true,
   },

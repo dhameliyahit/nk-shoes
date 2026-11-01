@@ -23,15 +23,29 @@ export async function generateMetadata({
     };
   }
 
-  return {
-    title: `${product.name} - ${product.subtitle} | NK-SHOES`,
-    description: product.description,
-    openGraph: {
-      title: product.name,
-      description: product.description,
-      images: product.images[0] ? [{ url: product.images[0] }] : [],
-    },
-  };
+    return {
+      title: `${product.name} | Authentic Athletic Footwear | NK-SHOES Jamnagar`,
+      description: `${product.description} Buy authentic ${product.name} with fast all-India delivery and COD from NK-SHOES Jamnagar showroom.`,
+      alternates: {
+        canonical: `https://nkshoes.in/products/${slug}`,
+      },
+      openGraph: {
+        title: `${product.name} - ${product.subtitle} | NK-SHOES Jamnagar`,
+        description: product.description,
+        url: `https://nkshoes.in/products/${slug}`,
+        siteName: "NK-SHOES Jamnagar",
+        images: product.images[0]
+          ? [
+              {
+                url: product.images[0],
+                width: 800,
+                height: 800,
+                alt: product.name,
+              },
+            ]
+          : [],
+      },
+    };
 }
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {

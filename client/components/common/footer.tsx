@@ -110,7 +110,7 @@ export function Footer() {
             FOOTER MENU (Logo | Shop Men | Shop Women | Shop Kids | Quick Links)
             ========================================================= */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 sm:gap-10">
-          {/* COLUMN 1: BRAND LOGO */}
+          {/* COLUMN 1: BRAND LOGO & JAMNAGAR SHOWROOM */}
           <div className="flex flex-col gap-3">
             <Link href="/" className="inline-block" aria-label="NK-SHOES Home">
               <span
@@ -120,9 +120,23 @@ export function Footer() {
                 NK<span className="font-bold text-[#E53E3E] ml-[2px]">SHOES</span>
               </span>
             </Link>
-            <p className="text-xs text-[#8E8E8E] leading-relaxed max-w-[220px]">
-              Engineered for speed, durability, and daily street tempo. High-performance footwear.
+            <p className="text-xs text-[#8E8E8E] leading-relaxed max-w-[240px]">
+              Jamnagar&apos;s trusted footwear retail store, now delivering authentic athletic performance & street sneakers online across India at <strong className="text-white">nkshoes.in</strong>.
             </p>
+            <div className="text-[11px] text-[#A3A3A3] border-t border-[#292828] pt-2 space-y-1">
+              <p className="font-bold text-white uppercase text-[10px] tracking-wider">
+                📍 Jamnagar Retail Showroom:
+              </p>
+              <p className="leading-tight">
+                Super Market Complex, Near Teen Batti, Jamnagar, Gujarat 361001
+              </p>
+              <p className="font-mono text-[#E53E3E] font-bold">
+                Daily 10:00 AM – 9:30 PM IST
+              </p>
+              <p className="font-mono text-white text-[10px] pt-0.5">
+                WhatsApp / Call: <strong className="text-[#25D366]">+91 97243 13238</strong>
+              </p>
+            </div>
           </div>
 
           {/* COLUMN 2: RUNNING & ROAD */}
@@ -346,18 +360,10 @@ export function Footer() {
             COPYRIGHT SECTION (Divider | Copyright | SyntaxMart link)
             ========================================================= */}
         <div className="border-t border-[#292828] pt-8 text-center text-xs sm:text-sm text-[#BBB9B5]">
-          <p>
-            Copyright &copy; 2026 All Rights Reserved | This template is made with care by{" "}
-            <span>
-              <a
-                href="https://syntaxmart.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="capitalize text-[#E53E3E] underline font-semibold hover:text-[#FF4A4A] transition-colors"
-              >
-                SyntaxMart
-              </a>
-            </span>
+          <p className="flex flex-wrap items-center justify-center gap-2">
+            <span>&copy; 2026 <strong>NK-SHOES</strong> (nkshoes.in) — Jamnagar, Gujarat. All Rights Reserved.</span>
+            <span>•</span>
+            <span>Authentic Footwear Retail & All-India Online Dispatch.</span>
           </p>
         </div>
       </div>

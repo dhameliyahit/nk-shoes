@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -10,8 +10,15 @@ import {
   RiAddLine,
   RiDeleteBinLine,
   RiImageLine,
+  RiUploadCloud2Line,
+  RiLoader4Line,
+  RiStarFill,
 } from "react-icons/ri";
-import { getAdminCategories, AdminCategory } from "@/services/adminService";
+import {
+  getAdminCategories,
+  uploadAdminProductImages,
+  AdminCategory,
+} from "@/services/adminService";
 import { Product } from "@/types/product";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
 
@@ -75,6 +82,44 @@ export function ProductForm({
       : ["https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&q=85"]
   );
   const [newImageUrl, setNewImageUrl] = useState("");
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Multi-File Upload Handler (Uploads to Cloudinary)
+  const handleFilesUpload = async (fileList: FileList | File[]) => {
+    const fileArray = Array.from(fileList).filter((f) => f.type.startsWith("image/"));
+    if (fileArray.length === 0) {
+      toast.error("Please select valid image files (JPG, PNG, WEBP, AVIF)");
+      return;
+    }
+
+    setIsUploadingImages(true);
+    const toastId = toast.loading(`Uploading ${fileArray.length} image(s) to Cloudinary...`);
+    try {
+      const urls = await uploadAdminProductImages(fileArray);
+      setImages((prev) => [...prev, ...urls]);
+      toast.success(`Successfully uploaded ${urls.length} product image(s)!`, { id: toastId });
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload images", { id: toastId });
+    } finally {
+      setIsUploadingImages(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  // Set As Main Thumbnail
+  const handleSetMainImage = (idx: number) => {
+    if (idx === 0) return;
+    setImages((prev) => {
+      const target = prev[idx];
+      const rest = prev.filter((_, i) => i !== idx);
+      return [target, ...rest];
+    });
+    toast.success("Set as main display thumbnail");
+  };
 
   // Colorways
   const [colors, setColors] = useState<{ name: string; hex: string }[]>(
@@ -456,6 +501,66 @@ export function ProductForm({
               <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#111111]">
                 Product Image Canvas ({images.length})
               </h3>
+              <span className="text-[10px] text-[#6B7280] font-mono">
+                Click star to set as main thumbnail
+              </span>
+            </div>
+
+            {/* MULTI-FILE DRAG & DROP UPLOAD ZONE */}
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setIsDragging(false);
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                  handleFilesUpload(e.dataTransfer.files);
+                }
+              }}
+              onClick={() => fileInputRef.current?.click()}
+              className={`border-2 border-dashed p-5 text-center cursor-pointer transition-colors ${
+                isDragging
+                  ? "border-black bg-[#F5F5F5]"
+                  : "border-[#D1D5DB] bg-[#FAFAFA] hover:border-black hover:bg-white"
+              } ${isUploadingImages ? "opacity-60 pointer-events-none" : ""}`}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files.length > 0) {
+                    handleFilesUpload(e.target.files);
+                  }
+                }}
+                className="hidden"
+              />
+
+              <div className="flex flex-col items-center justify-center gap-2">
+                {isUploadingImages ? (
+                  <>
+                    <RiLoader4Line className="text-2xl text-black animate-spin" />
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#111111]">
+                      Uploading to Cloudinary...
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <RiUploadCloud2Line className="text-2xl text-[#4B5563]" />
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#111111]">
+                      Drop multiple product photos here or{" "}
+                      <span className="underline text-black font-black">browse files</span>
+                    </p>
+                    <p className="text-[10px] text-[#6B7280]">
+                      Select multiple images at once (JPEG, PNG, WEBP, AVIF). Direct Cloudinary upload.
+                    </p>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* PREVIEWS ROW */}
@@ -463,44 +568,70 @@ export function ProductForm({
               {images.map((img, idx) => (
                 <div
                   key={idx}
-                  className="relative aspect-square bg-[#F5F5F5] border border-[#E5E7EB] p-1 group flex items-center justify-center overflow-hidden"
+                  className={`relative aspect-square bg-[#F5F5F5] border p-1 group flex items-center justify-center overflow-hidden transition-all ${
+                    idx === 0 ? "border-2 border-black shadow-xs" : "border-[#E5E7EB]"
+                  }`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={img} alt={`Preview ${idx}`} className="w-full h-full object-contain" />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(idx)}
-                    className="absolute top-1 right-1 w-6 h-6 bg-black text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                    title="Remove Image"
-                  >
-                    <RiDeleteBinLine />
-                  </button>
-                  {idx === 0 && (
-                    <span className="absolute bottom-1 left-1 bg-black text-white text-[9px] font-bold uppercase px-1">
-                      Main
+
+                  {/* Actions overlay */}
+                  <div className="absolute top-1 right-1 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {idx !== 0 && (
+                      <button
+                        type="button"
+                        onClick={() => handleSetMainImage(idx)}
+                        className="w-6 h-6 bg-white border border-[#D1D5DB] text-black text-xs flex items-center justify-center hover:bg-black hover:text-white transition-colors cursor-pointer"
+                        title="Set as Main Thumbnail"
+                      >
+                        <RiStarFill className="text-xs" />
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(idx)}
+                      className="w-6 h-6 bg-black text-white text-xs flex items-center justify-center hover:bg-[#E53E3E] transition-colors cursor-pointer"
+                      title="Remove Image"
+                    >
+                      <RiDeleteBinLine />
+                    </button>
+                  </div>
+
+                  {idx === 0 ? (
+                    <span className="absolute bottom-1 left-1 bg-black text-white text-[9px] font-bold uppercase px-1.5 py-0.5 tracking-wider">
+                      ★ Main Cover
+                    </span>
+                  ) : (
+                    <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[8px] font-mono px-1">
+                      #{idx + 1}
                     </span>
                   )}
                 </div>
               ))}
             </div>
 
-            {/* ADD IMAGE INPUT */}
-            <div className="flex items-center gap-2 pt-2">
-              <input
-                type="url"
-                value={newImageUrl}
-                onChange={(e) => setNewImageUrl(e.target.value)}
-                placeholder="Paste Cloudinary / image URL..."
-                className="flex-1 h-9 px-3 border border-[#D1D5DB] text-xs rounded-none outline-none focus:border-black"
-              />
-              <button
-                type="button"
-                onClick={handleAddImage}
-                className="px-3 h-9 bg-[#111111] hover:bg-black text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer shrink-0"
-              >
-                <RiAddLine />
-                <span>Add</span>
-              </button>
+            {/* OR PASTE IMAGE URL */}
+            <div className="pt-2 border-t border-[#E5E7EB]">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-[#6B7280] mb-1.5">
+                Or paste remote image URL:
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="url"
+                  value={newImageUrl}
+                  onChange={(e) => setNewImageUrl(e.target.value)}
+                  placeholder="https://res.cloudinary.com/..."
+                  className="flex-1 h-9 px-3 border border-[#D1D5DB] text-xs rounded-none outline-none focus:border-black font-mono text-[11px]"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddImage}
+                  className="px-3 h-9 bg-[#111111] hover:bg-black text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer shrink-0"
+                >
+                  <RiAddLine />
+                  <span>Add URL</span>
+                </button>
+              </div>
             </div>
           </div>
 

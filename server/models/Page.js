@@ -29,6 +29,16 @@ const pageSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    displayDate: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    subtitle: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     isPublished: {
       type: Boolean,
       default: true,

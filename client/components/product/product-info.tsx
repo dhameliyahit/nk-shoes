@@ -23,6 +23,7 @@ import { Product } from "@/types/product";
 import { formatPrice, cn } from "@/lib/utils";
 import { useCart } from "@/context/cart-context";
 import { useWishlist } from "@/context/wishlist-context";
+import { WhatsAppOrderButton } from "@/components/common/whatsapp-order-button";
 
 interface ProductInfoProps {
   product: Product;
@@ -327,6 +328,20 @@ export function ProductInfo({
           )}
           <span>{isWishlisted ? "Saved to Wishlist" : "Favorite / Wishlist"}</span>
         </Button>
+
+        {/* WhatsApp Instant Order Button */}
+        <WhatsAppOrderButton
+          mode="product"
+          phoneNumber="919724313238"
+          buttonText="Order Via WhatsApp"
+          productData={{
+            product,
+            selectedSize: selectedSize || undefined,
+            selectedColor: activeColor?.name,
+            quantity,
+          }}
+          className="h-11 min-h-[44px] w-full"
+        />
       </div>
 
       {/* 8. PINCODE DELIVERY ESTIMATE CHECKER */}

@@ -121,26 +121,38 @@ export function DynamicPageContent({ slug }: DynamicPageContentProps) {
               <RiShieldCheckLine className="text-xs text-[#10B981]" />
               <span>OFFICIAL NK-SHOES PROTOCOL</span>
             </div>
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-none mb-4">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-none mb-3">
               {page.title}
             </h1>
+            {page.subtitle && (
+              <p className="text-sm sm:text-base font-semibold text-[#FA003F] uppercase tracking-wide mb-3">
+                {page.subtitle}
+              </p>
+            )}
             {page.excerpt && (
               <p className="text-sm sm:text-base text-[#D1D5DB] font-normal leading-relaxed">
                 {page.excerpt}
               </p>
             )}
-            <div className="flex items-center gap-4 mt-6 text-[11px] font-mono text-[#9CA3AF]">
-              <span className="flex items-center gap-1.5">
-                <RiTimeLine />
-                <span>
-                  LAST REVISED:{" "}
-                  {new Date(page.updatedAt || page.createdAt).toLocaleDateString("en-IN", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })}
+            <div className="flex flex-wrap items-center gap-4 mt-6 text-[11px] font-mono text-[#9CA3AF]">
+              {page.displayDate ? (
+                <span className="flex items-center gap-1.5 bg-white/10 px-2 py-0.5 text-white font-bold">
+                  <RiTimeLine className="text-[#10B981]" />
+                  <span>DATE: {page.displayDate}</span>
                 </span>
-              </span>
+              ) : (
+                <span className="flex items-center gap-1.5">
+                  <RiTimeLine />
+                  <span>
+                    LAST REVISED:{" "}
+                    {new Date(page.updatedAt || page.createdAt).toLocaleDateString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                </span>
+              )}
               <span>•</span>
               <span className="uppercase">{page.category}</span>
             </div>
@@ -188,8 +200,8 @@ export function DynamicPageContent({ slug }: DynamicPageContentProps) {
                 Our support team is available Monday to Saturday, 9:00 AM – 7:00 PM IST.
               </p>
               <div className="pt-2 text-xs font-mono space-y-1">
-                <p className="text-[#111111] font-bold">support@nk-shoes.com</p>
-                <p className="text-[#6B7280]">+91 98765 43210</p>
+                <p className="text-[#111111] font-bold">nkshoes7@gmail.com</p>
+                <p className="text-[#6B7280] font-mono">+91 97243 13238</p>
               </div>
             </div>
           </aside>

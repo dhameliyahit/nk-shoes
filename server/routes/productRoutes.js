@@ -12,11 +12,15 @@ import {
   deleteProduct,
   addProductReview,
   voteReviewHelpful,
+  uploadProductImages,
 } from "../controllers/productController.js";
 import { protect, admin, optionalAuth } from "../middlewares/authMiddleware.js";
 import upload from "../middlewares/uploadMiddleware.js";
 
 const router = express.Router();
+
+// Admin multi-image upload endpoint (Memory -> Cloudinary)
+router.post("/upload", protect, admin, upload.array("images", 10), uploadProductImages);
 
 // Public routes
 router.get("/", getProducts);

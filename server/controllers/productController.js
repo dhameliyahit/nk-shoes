@@ -1,5 +1,6 @@
 import catchAsync from "../utils/catchAsync.js";
 import * as productService from "../services/productService.js";
+import { uploadFromBuffer } from "../services/cloudinaryService.js";
 
 /**
  * @desc    Get all products with multi-facet filters & sorting
@@ -143,4 +144,28 @@ export const voteReviewHelpful = catchAsync(async (req, res) => {
     req.params.reviewId
   );
   res.status(200).json(result);
+});
+
+/**
+ * @desc    Upload multiple product images to Cloudinary
+ * @route   POST /api/products/upload
+ * @access  Private/Admin
+ */
+export const uploadProductImages = catchAsync(async (req, res) => {
+  const files = req.files || [];
+  if (!files || files.length === 0) {
+    return res.status(400).json({ message: "No image files provided for upload" });
+  }
+
+  const uploadedUrls = [];
+  for (const file of files) {
+    const result = await uploadFromBuffer(file.buffer, "nk-shoes/products");
+    uploadedUrls.push(result.secure_url);
+  }
+
+  res.status(200).json({
+    status: "success",
+    count: uploadedUrls.length,
+    images: uploadedUrls,
+  });
 });

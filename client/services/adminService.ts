@@ -146,6 +146,8 @@ export interface AdminPage {
   category: "Support" | "Policy" | "Company" | "General";
   content: string;
   excerpt?: string;
+  displayDate?: string;
+  subtitle?: string;
   isPublished: boolean;
   metaTitle?: string;
   metaDescription?: string;
@@ -231,6 +233,34 @@ export async function getAdminProductById(id: string, token?: string | null): Pr
     throw new Error("Failed to load product");
   }
   return await res.json();
+}
+
+export async function uploadAdminProductImages(files: File[], token?: string | null): Promise<string[]> {
+  const formData = new FormData();
+  for (const file of files) {
+    formData.append("images", file);
+  }
+
+  const resolvedToken =
+    token || (typeof window !== "undefined" ? localStorage.getItem("nk_shoes_token") : null);
+  const headers: Record<string, string> = {};
+  if (resolvedToken) {
+    headers["Authorization"] = `Bearer ${resolvedToken}`;
+  }
+
+  const res = await fetch(`${api.products}/upload`, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to upload product images");
+  }
+
+  const data = await res.json();
+  return data.images || [];
 }
 
 export async function createAdminProduct(payload: any, token?: string | null): Promise<Product> {

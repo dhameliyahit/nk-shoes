@@ -29,7 +29,7 @@ export const getPageBySlug = async (req, res) => {
 export const getPublicPages = async (req, res) => {
   try {
     const pages = await Page.find({ isPublished: true })
-      .select("title slug category excerpt updatedAt")
+      .select("title slug category excerpt displayDate subtitle updatedAt")
       .sort({ category: 1, title: 1 });
     res.json(pages);
   } catch (error) {
@@ -58,7 +58,18 @@ export const getAllPagesAdmin = async (req, res) => {
  */
 export const createPageAdmin = async (req, res) => {
   try {
-    const { title, slug, category, content, excerpt, isPublished, metaTitle, metaDescription } = req.body;
+    const {
+      title,
+      slug,
+      category,
+      content,
+      excerpt,
+      displayDate,
+      subtitle,
+      isPublished,
+      metaTitle,
+      metaDescription,
+    } = req.body;
 
     if (!title || !slug) {
       return res.status(400).json({ message: "Title and slug are required" });
@@ -76,6 +87,8 @@ export const createPageAdmin = async (req, res) => {
       category: category || "General",
       content: content || "",
       excerpt: excerpt || "",
+      displayDate: displayDate || "",
+      subtitle: subtitle || "",
       isPublished: isPublished !== undefined ? isPublished : true,
       metaTitle: metaTitle || title,
       metaDescription: metaDescription || excerpt || "",
@@ -113,6 +126,8 @@ export const updatePageAdmin = async (req, res) => {
     if (req.body.category !== undefined) page.category = req.body.category;
     if (req.body.content !== undefined) page.content = req.body.content;
     if (req.body.excerpt !== undefined) page.excerpt = req.body.excerpt;
+    if (req.body.displayDate !== undefined) page.displayDate = req.body.displayDate;
+    if (req.body.subtitle !== undefined) page.subtitle = req.body.subtitle;
     if (req.body.isPublished !== undefined) page.isPublished = req.body.isPublished;
     if (req.body.metaTitle !== undefined) page.metaTitle = req.body.metaTitle;
     if (req.body.metaDescription !== undefined) page.metaDescription = req.body.metaDescription;

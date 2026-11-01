@@ -37,6 +37,7 @@ import {
   PincodeVerificationResult,
 } from "@/services/orderService";
 import { TaxInvoiceModal } from "@/components/order/tax-invoice";
+import { WhatsAppOrderButton } from "@/components/common/whatsapp-order-button";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -1280,6 +1281,24 @@ export default function CheckoutPage() {
                   ? `Pay ${formatPrice(currentTotal)} with PhonePe`
                   : `Place Order Now • ${formatPrice(currentTotal)}`}
               </Button>
+
+              {/* Order Via WhatsApp Alternative Button */}
+              <WhatsAppOrderButton
+                mode="checkout"
+                phoneNumber="919724313238"
+                checkoutData={{
+                  items,
+                  total: currentTotal,
+                  subtotal,
+                  discountAmount,
+                  shippingFee: currentShippingFee,
+                  codFee: currentCodFee,
+                  appliedPromo: appliedPromo || undefined,
+                  customer: formData,
+                }}
+                className="h-12 w-full"
+                buttonText="Order this Bag on WhatsApp"
+              />
 
               {/* Security Reassurance */}
               <div className="flex items-center justify-center gap-3 text-[11px] text-[#707072] pt-2 border-t border-[#F5F5F5]">
