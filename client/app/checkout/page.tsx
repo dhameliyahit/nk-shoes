@@ -1293,7 +1293,6 @@ export default function CheckoutPage() {
                   discountAmount,
                   shippingFee: currentShippingFee,
                   codFee: currentCodFee,
-                  appliedPromo: appliedPromo || undefined,
                   customer: formData,
                 }}
                 className="h-12 w-full"

@@ -20,7 +20,6 @@ interface WhatsAppCheckoutData {
   discountAmount?: number;
   shippingFee?: number;
   codFee?: number;
-  appliedPromo?: string;
   customer?: {
     fullName?: string;
     phone?: string;
@@ -78,7 +77,7 @@ export function WhatsAppOrderButton({
         .filter(Boolean)
         .join("\n");
     } else if (mode === "checkout" && checkoutData) {
-      const { items, total, subtotal, discountAmount = 0, shippingFee = 0, appliedPromo, customer } = checkoutData;
+      const { items, total, subtotal, discountAmount = 0, shippingFee = 0, customer } = checkoutData;
 
       const itemsList = items
         .map(
@@ -109,7 +108,7 @@ export function WhatsAppOrderButton({
         itemsList,
         ``,
         `💵 *Subtotal:* ₹${subtotal.toLocaleString("en-IN")}`,
-        discountAmount > 0 ? `🏷️ *Discount (${appliedPromo || "Coupon"}):* -₹${discountAmount.toLocaleString("en-IN")}` : "",
+        discountAmount > 0 ? `🏷️ *Discount:* -₹${discountAmount.toLocaleString("en-IN")}` : "",
         `🚚 *Shipping:* ${shippingFee === 0 ? "FREE" : `₹${shippingFee}`}`,
         `💳 *Total Payable:* ₹${total.toLocaleString("en-IN")}`,
         ``,
