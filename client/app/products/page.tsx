@@ -43,6 +43,14 @@ function ProductsCatalogContent() {
   const [productsList, setProductsList] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // Synchronize filter state whenever URL searchParams change
+  useEffect(() => {
+    const cat = searchParams.get("category");
+    setSelectedCategory(cat || "all");
+    const gen = searchParams.get("gender");
+    setSelectedGender(gen || "all");
+  }, [searchParams]);
+
   useEffect(() => {
     let isMounted = true;
     async function loadBackendCategories() {
@@ -73,7 +81,7 @@ function ProductsCatalogContent() {
     async function loadBackendProducts() {
       setLoading(true);
       try {
-        const res = await getProducts();
+        const res = await getProducts({ limit: 100 });
         if (isMounted) {
           setProductsList(res?.products || []);
         }
@@ -131,7 +139,7 @@ function ProductsCatalogContent() {
     }
 
     return result;
-  }, [selectedGender, selectedCategory, selectedSize, sortBy]);
+  }, [productsList, selectedGender, selectedCategory, selectedSize, sortBy]);
 
   const activeFilterCount =
     (selectedCategory !== "all" ? 1 : 0) +

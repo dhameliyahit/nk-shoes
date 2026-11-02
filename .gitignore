@@ -32,3 +32,16 @@ fix.txt
 server/.env
 client/.env
 
+# Large raw product photos & intermediate conversions (Cloudinary CDN is used for production)
+nk-product-images/
+nk-product-images-converted/
+server/uploads/
+client/public/products/
+
+# Migration scripts and generated product catalog seeds
+server/scripts/
+scripts/
+server/seeds/full_product_catalog.json
+server/seeds/upload_and_import_products.js
+server/seeds/*.json
+

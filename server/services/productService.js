@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Product from "../models/Product.js";
+import Category from "../models/Category.js";
 import AppError from "../utils/appError.js";
 import { uploadFromBuffer, deleteFromCloudinary } from "./cloudinaryService.js";
 import { trackProductViewPerDevice } from "./viewTrackerService.js";
