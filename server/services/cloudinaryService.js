@@ -22,7 +22,7 @@ export const uploadFromBuffer = (buffer, folder = "nk-shoes/categories", options
       {
         folder,
         resource_type: "image",
-        quality: "auto:good",
+        quality: "auto:best",
         fetch_format: "auto",
         ...options,
       },
@@ -58,7 +58,7 @@ export const uploadImage = async (fileStrOrUrl, folder = "nk-shoes/categories", 
     const result = await cloudinary.uploader.upload(fileStrOrUrl, {
       folder,
       resource_type: "image",
-      quality: "auto:good",
+      quality: "auto:best",
       fetch_format: "auto",
       ...options,
     });
@@ -79,17 +79,51 @@ export const uploadImage = async (fileStrOrUrl, folder = "nk-shoes/categories", 
 };
 
 /**
- * Delete an asset from Cloudinary using its public_id
- * @param {string} publicId - The public ID of the image
+ * Extract Cloudinary public_id from a Cloudinary URL
+ * @param {string} url
+ * @returns {string|null}
  */
-export const deleteFromCloudinary = async (publicId) => {
+export const extractPublicIdFromUrl = (url) => {
+  if (!url || typeof url !== "string") return null;
+  if (!url.includes("cloudinary.com")) return null;
+  try {
+    const parts = url.split("/upload/");
+    if (parts.length < 2) return null;
+    let afterUpload = parts[1].split("?")[0];
+    const segments = afterUpload.split("/");
+    // Filter out transformation segments like w_800, c_fill, and version tags v123456
+    const cleanSegments = segments.filter(
+      (seg) => !(seg.startsWith("v") && /^\d+$/.test(seg.slice(1))) && !seg.includes(",")
+    );
+    const pathWithExt = cleanSegments.join("/");
+    const lastDotIndex = pathWithExt.lastIndexOf(".");
+    if (lastDotIndex !== -1) {
+      return pathWithExt.substring(0, lastDotIndex);
+    }
+    return pathWithExt;
+  } catch (err) {
+    return null;
+  }
+};
+
+/**
+ * Delete an asset from Cloudinary using its public_id or full Cloudinary URL
+ * @param {string} publicIdOrUrl - The public ID or Cloudinary URL of the image
+ */
+export const deleteFromCloudinary = async (publicIdOrUrl) => {
+  if (!publicIdOrUrl) return { result: "not_found" };
+  let publicId = publicIdOrUrl;
+  if (typeof publicIdOrUrl === "string" && publicIdOrUrl.includes("http")) {
+    publicId = extractPublicIdFromUrl(publicIdOrUrl);
+  }
   if (!publicId) return { result: "not_found" };
   try {
     const result = await cloudinary.uploader.destroy(publicId);
+    console.log(`[Cloudinary Purge] Deleted old asset: ${publicId} ->`, result?.result || result);
     return result;
   } catch (error) {
-    console.error("[Cloudinary Delete Error]", error);
-    throw error;
+    console.error(`[Cloudinary Delete Error] Failed to delete ${publicId}:`, error.message);
+    return { result: "error", message: error.message };
   }
 };
 

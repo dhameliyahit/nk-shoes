@@ -104,11 +104,14 @@ function ProductsCatalogContent() {
       );
     }
 
-    // Filter by Category
+    // Filter by Category (matches primary or any associated category in array)
     if (selectedCategory !== "all") {
-      result = result.filter(
-        (p) => p.category.toLowerCase() === selectedCategory.toLowerCase()
-      );
+      const target = selectedCategory.toLowerCase();
+      result = result.filter((p) => {
+        const cat = String(p.categorySlug || p.category || "").toLowerCase();
+        const hasInArray = Array.isArray(p.categorySlugs) && p.categorySlugs.some((s) => String(s).toLowerCase() === target);
+        return cat === target || hasInArray;
+      });
     }
 
     // Filter by Size

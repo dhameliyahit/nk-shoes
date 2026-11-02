@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import Category from "../models/Category.js";
 import AppError from "../utils/appError.js";
-import { uploadFromBuffer, uploadImage, deleteFromCloudinary } from "./cloudinaryService.js";
+import { uploadFromBuffer, uploadImage, deleteFromCloudinary, extractPublicIdFromUrl } from "./cloudinaryService.js";
 
 /**
  * Service: Retrieve categories with optional filters
@@ -120,19 +120,28 @@ export const updateCategory = async (id, updateData, fileBuffer) => {
 
   // Handle image replacement if new file or image URL provided
   if (fileBuffer) {
-    if (category.imagePublicId) {
-      await deleteFromCloudinary(category.imagePublicId);
+    const oldPublicId = category.imagePublicId || extractPublicIdFromUrl(category.image);
+    if (oldPublicId) {
+      await deleteFromCloudinary(oldPublicId);
     }
     const uploadResult = await uploadFromBuffer(fileBuffer, "nk-shoes/categories");
     category.image = uploadResult.secure_url;
     category.imagePublicId = uploadResult.public_id;
-  } else if (updateData.image && updateData.image !== category.image && (updateData.image.startsWith("data:image/") || updateData.image.startsWith("http"))) {
-    if (category.imagePublicId) {
-      await deleteFromCloudinary(category.imagePublicId);
+  } else if (updateData.image !== undefined && updateData.image !== category.image) {
+    const oldPublicId = category.imagePublicId || extractPublicIdFromUrl(category.image);
+    if (oldPublicId) {
+      await deleteFromCloudinary(oldPublicId);
     }
-    const uploadResult = await uploadImage(updateData.image, "nk-shoes/categories");
-    category.image = uploadResult.secure_url;
-    category.imagePublicId = uploadResult.public_id;
+    if (updateData.image && (updateData.image.startsWith("data:image/") || !updateData.image.includes("cloudinary.com"))) {
+      if (updateData.image.startsWith("data:image/") || updateData.image.startsWith("http")) {
+        const uploadResult = await uploadImage(updateData.image, "nk-shoes/categories");
+        category.image = uploadResult.secure_url;
+        category.imagePublicId = uploadResult.public_id;
+      }
+    } else {
+      category.image = updateData.image;
+      category.imagePublicId = extractPublicIdFromUrl(updateData.image) || "";
+    }
   }
 
   if (updateData.name) category.name = updateData.name.trim();
@@ -164,8 +173,9 @@ export const deleteCategory = async (id) => {
     throw new AppError("Category not found", 404);
   }
 
-  if (category.imagePublicId) {
-    await deleteFromCloudinary(category.imagePublicId);
+  const publicId = category.imagePublicId || extractPublicIdFromUrl(category.image);
+  if (publicId) {
+    await deleteFromCloudinary(publicId);
   }
 
   await category.deleteOne();

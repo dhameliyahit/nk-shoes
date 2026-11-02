@@ -59,6 +59,10 @@ export function normalizeProduct(p: any): Product {
     gender: p.gender || "unisex",
     category: p.categorySlug || (typeof p.category === "object" ? p.category?.slug : p.category) || "sneakers",
     categorySlug: p.categorySlug || (typeof p.category === "object" ? p.category?.slug : p.category) || "sneakers",
+    categories: Array.isArray(p.categories) ? p.categories : (p.category ? [p.category] : []),
+    categorySlugs: Array.isArray(p.categorySlugs) && p.categorySlugs.length > 0
+      ? p.categorySlugs
+      : [p.categorySlug || (typeof p.category === "object" ? p.category?.slug : p.category) || "sneakers"],
     price: Number(p.price),
     originalPrice: p.originalPrice ? Number(p.originalPrice) : undefined,
     images: Array.isArray(p.images) && p.images.length > 0 ? p.images : ["https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=85"],

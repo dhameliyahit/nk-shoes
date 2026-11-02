@@ -98,8 +98,8 @@ export const verifyEmail = async (req, res) => {
 
     if (user.isVerified) {
       // User is already verified, generate tokens and log in directly
-      const accessToken = generateAccessToken(user._id);
-      const refreshToken = generateRefreshToken(user._id);
+      const accessToken = generateAccessToken(user._id, user.role);
+      const refreshToken = generateRefreshToken(user._id, user.role);
 
       user.refreshToken = refreshToken;
       await user.save();
@@ -143,8 +143,8 @@ export const verifyEmail = async (req, res) => {
     user.verificationOTPExpires = undefined;
     user.verificationToken = undefined;
 
-    const accessToken = generateAccessToken(user._id);
-    const refreshToken = generateRefreshToken(user._id);
+    const accessToken = generateAccessToken(user._id, user.role);
+    const refreshToken = generateRefreshToken(user._id, user.role);
     user.refreshToken = refreshToken;
     await user.save();
 
@@ -251,8 +251,8 @@ export const login = async (req, res) => {
         });
       }
 
-      const accessToken = generateAccessToken(user._id);
-      const refreshToken = generateRefreshToken(user._id);
+      const accessToken = generateAccessToken(user._id, user.role);
+      const refreshToken = generateRefreshToken(user._id, user.role);
 
       user.refreshToken = refreshToken;
       await user.save();

@@ -47,6 +47,8 @@ export interface Product {
   gender: "men" | "women" | "unisex" | "kids";
   category: any;
   categorySlug?: string;
+  categories?: any[];
+  categorySlugs?: string[];
   price: number;
   originalPrice?: number;
   discountPercent?: number;

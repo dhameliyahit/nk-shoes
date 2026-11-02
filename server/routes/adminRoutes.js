@@ -29,7 +29,9 @@ import {
   updateSetting,
   testEmail,
 } from "../controllers/settingController.js";
+import { uploadCategoryImage } from "../controllers/categoryController.js";
 import { protect, admin } from "../middlewares/authMiddleware.js";
+import upload from "../middlewares/uploadMiddleware.js";
 
 const router = express.Router();
 
@@ -47,6 +49,7 @@ router
   .delete(deleteProduct);
 
 // Categories
+router.post("/categories/upload", upload.single("image"), uploadCategoryImage);
 router.route("/categories").post(createCategory);
 router.route("/categories/:id").put(updateCategory).delete(deleteCategory);
 

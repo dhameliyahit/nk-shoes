@@ -157,11 +157,12 @@ export const uploadProductImages = catchAsync(async (req, res) => {
     return res.status(400).json({ message: "No image files provided for upload" });
   }
 
-  const uploadedUrls = [];
-  for (const file of files) {
-    const result = await uploadFromBuffer(file.buffer, "nk-shoes/products");
-    uploadedUrls.push(result.secure_url);
-  }
+  // Fast parallel upload with Promise.all for lightning-fast multi-image uploads
+  const uploadPromises = files.map((file) =>
+    uploadFromBuffer(file.buffer, "nk-shoes/products")
+  );
+  const results = await Promise.all(uploadPromises);
+  const uploadedUrls = results.map((r) => r.secure_url);
 
   res.status(200).json({
     status: "success",

@@ -129,13 +129,28 @@ export default function AdminProductsPage() {
       },
     },
     {
-      header: "CATEGORY",
+      header: "CATEGORIES",
       render: (item) => {
-        const cat = item.categorySlug || (typeof item.category === "string" ? item.category : "SNEAKERS");
+        const slugs = Array.isArray(item.categorySlugs) && item.categorySlugs.length > 0
+          ? item.categorySlugs
+          : [item.categorySlug || (typeof item.category === "string" ? item.category : "SNEAKERS")];
+
         return (
-          <span className="font-mono text-xs uppercase text-[#374151] font-semibold">
-            {cat}
-          </span>
+          <div className="flex flex-wrap items-center gap-1 max-w-[200px]">
+            {slugs.map((cat, idx) => (
+              <span
+                key={idx}
+                className={`font-mono text-[10px] uppercase font-bold px-1.5 py-0.5 border ${
+                  idx === 0
+                    ? "bg-[#111111] text-white border-black"
+                    : "bg-[#F3F4F6] text-[#374151] border-[#E5E7EB]"
+                }`}
+                title={idx === 0 ? "Primary Category" : undefined}
+              >
+                {cat}
+              </span>
+            ))}
+          </div>
         );
       },
     },
@@ -271,7 +286,9 @@ export default function AdminProductsPage() {
           Boolean(
             item.name.toLowerCase().includes(q) ||
             (item.sku && item.sku.toLowerCase().includes(q)) ||
-            (item.categorySlug && item.categorySlug.toLowerCase().includes(q))
+            (item.categorySlug && item.categorySlug.toLowerCase().includes(q)) ||
+            (Array.isArray(item.categorySlugs) &&
+              item.categorySlugs.some((s: string) => s.toLowerCase().includes(q)))
           )
         }
         filterOptions={filterOptions}

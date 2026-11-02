@@ -147,6 +147,20 @@ const productSchema = new mongoose.Schema(
       index: true,
       default: "sneakers",
     },
+    categories: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+      },
+    ],
+    categorySlugs: [
+      {
+        type: String,
+        lowercase: true,
+        trim: true,
+        index: true,
+      },
+    ],
     gender: {
       type: String,
       enum: ["men", "women", "unisex", "kids"],
@@ -218,7 +232,7 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-// Auto-generate slug from name if not provided
+// Auto-generate slug from name if not provided and synchronize multiple categories
 productSchema.pre("validate", function (next) {
   if (this.name && !this.slug) {
     this.slug = this.name
@@ -226,6 +240,25 @@ productSchema.pre("validate", function (next) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)+/g, "");
   }
+
+  // Ensure categorySlugs array is in sync with categorySlug
+  if (Array.isArray(this.categorySlugs) && this.categorySlugs.length > 0) {
+    if (!this.categorySlug) {
+      this.categorySlug = this.categorySlugs[0];
+    }
+  } else if (this.categorySlug) {
+    this.categorySlugs = [this.categorySlug];
+  }
+
+  // Ensure categories array is in sync with category ObjectId
+  if (Array.isArray(this.categories) && this.categories.length > 0) {
+    if (!this.category) {
+      this.category = this.categories[0];
+    }
+  } else if (this.category) {
+    this.categories = [this.category];
+  }
+
   next();
 });
 

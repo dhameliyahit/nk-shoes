@@ -35,12 +35,20 @@ export const queryProducts = async (queryParams = {}) => {
     query.$or = [{ name: regex }, { subtitle: regex }, { description: regex }, { tags: regex }];
   }
 
-  // 2. Category Filter (slug or ObjectId)
+  // 2. Category Filter (slug or ObjectId) - matches either primary or multiple categories array
   if (category && category !== "all") {
     if (mongoose.Types.ObjectId.isValid(category)) {
-      query.category = category;
+      const catId = new mongoose.Types.ObjectId(category);
+      const catClause = { $or: [{ category: catId }, { categories: catId }] };
+      if (!query.$and) query.$and = [];
+      query.$and.push(catClause);
     } else {
-      query.categorySlug = category.toLowerCase().trim();
+      const cleanSlug = category.toLowerCase().trim();
+      const catClause = {
+        $or: [{ categorySlug: cleanSlug }, { categorySlugs: cleanSlug }],
+      };
+      if (!query.$and) query.$and = [];
+      query.$and.push(catClause);
     }
   }
 
@@ -131,6 +139,7 @@ export const queryProducts = async (queryParams = {}) => {
     Product.countDocuments(query),
     Product.find(query)
       .populate("category", "name slug")
+      .populate("categories", "name slug")
       .sort(sortOptions)
       .skip(skip)
       .limit(limit),
@@ -154,6 +163,7 @@ export const getNewArrivals = async (limit = 8) => {
   const safeLimit = Math.min(24, Math.max(1, limit));
   return await Product.find({ isActive: true })
     .populate("category", "name slug")
+    .populate("categories", "name slug")
     .sort({ createdAt: -1 })
     .limit(safeLimit);
 };
@@ -167,6 +177,7 @@ export const getBestSellers = async (limit = 8) => {
   const safeLimit = Math.min(24, Math.max(1, limit));
   return await Product.find({ isActive: true })
     .populate("category", "name slug")
+    .populate("categories", "name slug")
     .sort({ salesCount: -1, viewsCount: -1, ratings: -1, createdAt: -1 })
     .limit(safeLimit);
 };
@@ -179,6 +190,7 @@ export const getFeaturedProducts = async (limit = 8) => {
   const safeLimit = Math.min(20, Math.max(1, limit));
   return await Product.find({ isFeatured: true, isActive: true })
     .populate("category", "name slug")
+    .populate("categories", "name slug")
     .sort({ createdAt: -1 })
     .limit(safeLimit);
 };
@@ -192,10 +204,9 @@ export const getFeaturedProducts = async (limit = 8) => {
 export const getProductBySlug = async (slug, req = null) => {
   if (!slug) throw new AppError("Product slug is required", 400);
 
-  const product = await Product.findOne({ slug: slug.toLowerCase(), isActive: true }).populate(
-    "category",
-    "name slug"
-  );
+  const product = await Product.findOne({ slug: slug.toLowerCase(), isActive: true })
+    .populate("category", "name slug")
+    .populate("categories", "name slug");
 
   if (!product) {
     throw new AppError("Product not found with requested slug", 404);
@@ -208,11 +219,22 @@ export const getProductBySlug = async (slug, req = null) => {
     Product.updateOne({ _id: product._id }, { $inc: { viewsCount: 1 } }).exec();
   }
 
+  const allSlugs = [
+    product.categorySlug,
+    ...(Array.isArray(product.categorySlugs) ? product.categorySlugs : []),
+  ].filter(Boolean);
+
   const relatedProducts = await Product.find({
     _id: { $ne: product._id },
     isActive: true,
-    $or: [{ categorySlug: product.categorySlug }, { gender: product.gender }],
+    $or: [
+      { categorySlug: { $in: allSlugs } },
+      { categorySlugs: { $in: allSlugs } },
+      { gender: product.gender },
+    ],
   })
+    .populate("category", "name slug")
+    .populate("categories", "name slug")
     .limit(4)
     .sort({ salesCount: -1, viewsCount: -1 });
 
@@ -230,7 +252,9 @@ export const getProductById = async (id, req = null) => {
     throw new AppError("Invalid product ID format", 400);
   }
 
-  const product = await Product.findById(id).populate("category", "name slug");
+  const product = await Product.findById(id)
+    .populate("category", "name slug")
+    .populate("categories", "name slug");
   if (!product || !product.isActive) {
     throw new AppError("Product not found", 404);
   }
@@ -336,6 +360,8 @@ export const createProduct = async (productData, files = []) => {
     originalPrice: originalPrice ? Number(originalPrice) : undefined,
     category: category || undefined,
     categorySlug: categorySlug || "sneakers",
+    categories: Array.isArray(productData.categories) ? productData.categories : (category ? [category] : []),
+    categorySlugs: Array.isArray(productData.categorySlugs) ? productData.categorySlugs : (categorySlug ? [categorySlug] : []),
     gender: gender || "unisex",
     brand: brand || "NK-SHOES",
     images: uploadedImages,

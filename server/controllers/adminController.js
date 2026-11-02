@@ -2,6 +2,74 @@ import Product from "../models/Product.js";
 import Category from "../models/Category.js";
 import Order from "../models/Order.js";
 import User from "../models/User.js";
+import { deleteFromCloudinary, extractPublicIdFromUrl } from "../services/cloudinaryService.js";
+
+/**
+ * Helper: Resolve and normalize single/multiple categories
+ * Maps ObjectIds and slugs across category, categorySlug, categories, and categorySlugs
+ */
+async function resolveCategories(data) {
+  let rawList = [];
+
+  if (Array.isArray(data.categorySlugs) && data.categorySlugs.length > 0) {
+    rawList.push(...data.categorySlugs);
+  }
+  if (Array.isArray(data.categories) && data.categories.length > 0) {
+    rawList.push(...data.categories);
+  }
+  if (data.category) {
+    rawList.push(data.category);
+  }
+  if (data.categorySlug) {
+    rawList.push(data.categorySlug);
+  }
+
+  if (rawList.length === 0) return;
+
+  const resolvedIds = [];
+  const resolvedSlugs = [];
+
+  for (const item of rawList) {
+    if (!item) continue;
+    let val = typeof item === "object" && item !== null ? (item._id || item.slug || item.name) : item;
+    val = String(val).trim();
+    if (!val) continue;
+
+    const isObjectId = /^[0-9a-fA-F]{24}$/.test(val);
+    if (isObjectId) {
+      const found = await Category.findById(val);
+      if (found) {
+        resolvedIds.push(found._id);
+        resolvedSlugs.push(found.slug.toLowerCase().trim());
+      } else {
+        resolvedIds.push(val);
+      }
+    } else {
+      const cleanSlug = val.toLowerCase().trim();
+      const found = await Category.findOne({
+        $or: [{ slug: cleanSlug }, { name: new RegExp(`^${val}$`, "i") }],
+      });
+      if (found) {
+        resolvedIds.push(found._id);
+        resolvedSlugs.push(found.slug.toLowerCase().trim());
+      } else {
+        resolvedSlugs.push(cleanSlug);
+      }
+    }
+  }
+
+  const uniqueSlugs = [...new Set(resolvedSlugs)];
+  const uniqueIds = [...new Set(resolvedIds.map(String))];
+
+  if (uniqueSlugs.length > 0) {
+    data.categorySlug = uniqueSlugs[0];
+    data.categorySlugs = uniqueSlugs;
+  }
+  if (uniqueIds.length > 0) {
+    data.category = uniqueIds[0];
+    data.categories = uniqueIds;
+  }
+}
 
 /**
  * Products Management
@@ -16,20 +84,7 @@ export const createProduct = async (req, res) => {
         .replace(/(^-|-$)+/g, "");
     }
 
-    if (productData.category && typeof productData.category === "string") {
-      const isObjectId = /^[0-9a-fA-F]{24}$/.test(productData.category);
-      if (!isObjectId) {
-        const foundCategory = await Category.findOne({
-          $or: [{ slug: productData.category.toLowerCase() }, { name: new RegExp(`^${productData.category}$`, "i") }],
-        });
-        if (foundCategory) {
-          productData.category = foundCategory._id;
-          productData.categorySlug = foundCategory.slug;
-        } else {
-          delete productData.category;
-        }
-      }
-    }
+    await resolveCategories(productData);
 
     const product = new Product(productData);
     const createdProduct = await product.save();
@@ -47,18 +102,14 @@ export const updateProduct = async (req, res) => {
     }
     const updateData = { ...req.body };
 
-    if (updateData.category && typeof updateData.category === "string") {
-      const isObjectId = /^[0-9a-fA-F]{24}$/.test(updateData.category);
-      if (!isObjectId) {
-        const foundCategory = await Category.findOne({
-          $or: [{ slug: updateData.category.toLowerCase() }, { name: new RegExp(`^${updateData.category}$`, "i") }],
-        });
-        if (foundCategory) {
-          updateData.category = foundCategory._id;
-          updateData.categorySlug = foundCategory.slug;
-        } else {
-          delete updateData.category;
-        }
+    await resolveCategories(updateData);
+
+    // Purge removed images from Cloudinary if image list was updated
+    if (Array.isArray(updateData.images) && Array.isArray(product.images)) {
+      const removedImages = product.images.filter((oldUrl) => !updateData.images.includes(oldUrl));
+      for (const removed of removedImages) {
+        const pid = extractPublicIdFromUrl(removed);
+        if (pid) await deleteFromCloudinary(pid);
       }
     }
 
@@ -72,7 +123,9 @@ export const updateProduct = async (req, res) => {
 
 export const getProductByIdAdmin = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id).populate("category", "name slug");
+    const product = await Product.findById(req.params.id)
+      .populate("category", "name slug")
+      .populate("categories", "name slug");
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -88,6 +141,20 @@ export const deleteProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
+
+    // Purge product images from Cloudinary
+    if (Array.isArray(product.media)) {
+      for (const m of product.media) {
+        if (m.public_id) await deleteFromCloudinary(m.public_id);
+      }
+    }
+    if (Array.isArray(product.images)) {
+      for (const imgUrl of product.images) {
+        const pid = extractPublicIdFromUrl(imgUrl);
+        if (pid) await deleteFromCloudinary(pid);
+      }
+    }
+
     await product.deleteOne();
     res.json({ message: "Product removed successfully", id: req.params.id });
   } catch (error) {
@@ -121,6 +188,17 @@ export const updateCategory = async (req, res) => {
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
+
+    const newImage = req.body.image;
+    // If category image changed or removed, delete the old Cloudinary image
+    if (newImage !== undefined && newImage !== category.image) {
+      const oldPublicId = category.imagePublicId || extractPublicIdFromUrl(category.image);
+      if (oldPublicId) {
+        await deleteFromCloudinary(oldPublicId);
+      }
+      category.imagePublicId = extractPublicIdFromUrl(newImage) || "";
+    }
+
     Object.assign(category, req.body);
     const updatedCategory = await category.save();
     res.json(updatedCategory);
@@ -135,6 +213,17 @@ export const deleteCategory = async (req, res) => {
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
+
+    // Purge category image from Cloudinary
+    const publicId = category.imagePublicId || extractPublicIdFromUrl(category.image);
+    if (publicId) {
+      await deleteFromCloudinary(publicId);
+    }
+    if (category.bannerImage) {
+      const bannerPid = extractPublicIdFromUrl(category.bannerImage);
+      if (bannerPid) await deleteFromCloudinary(bannerPid);
+    }
+
     await category.deleteOne();
     res.json({ message: "Category removed successfully", id: req.params.id });
   } catch (error) {

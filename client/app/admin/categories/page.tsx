@@ -12,6 +12,9 @@ import {
   RiRefreshLine,
   RiFolderLine,
   RiImageLine,
+  RiUploadCloud2Line,
+  RiLoader4Line,
+  RiLink,
 } from "react-icons/ri";
 import { DataTable, Column } from "@/components/admin/data-table";
 import { StatusBadge } from "@/components/admin/status-badge";
@@ -21,6 +24,7 @@ import {
   createAdminCategory,
   updateAdminCategory,
   deleteAdminCategory,
+  uploadAdminCategoryImage,
   AdminCategory,
 } from "@/services/adminService";
 
@@ -42,6 +46,12 @@ export default function AdminCategoriesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<ExtendedCategory | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Image Upload State
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageInputMode, setImageInputMode] = useState<"upload" | "url">("upload");
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   // Form Fields
   const [formData, setFormData] = useState({
@@ -82,11 +92,12 @@ export default function AdminCategoriesPage() {
 
   const openCreateModal = () => {
     setEditingCategory(null);
+    setImageInputMode("upload");
     setFormData({
       name: "",
       slug: "",
       description: "",
-      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
+      image: "",
       bannerImage: "",
       badge: "",
       startingPrice: "From ₹2,499",
@@ -98,6 +109,7 @@ export default function AdminCategoriesPage() {
 
   const openEditModal = (cat: ExtendedCategory) => {
     setEditingCategory(cat);
+    setImageInputMode(cat.image ? "upload" : "upload");
     setFormData({
       name: cat.name || "",
       slug: cat.slug || "",
@@ -110,6 +122,87 @@ export default function AdminCategoriesPage() {
       isActive: cat.isActive !== false,
     });
     setIsModalOpen(true);
+  };
+
+  const optimizeImage = async (file: File, maxWidth = 1600, quality = 0.85): Promise<File> => {
+    if (
+      typeof window === "undefined" ||
+      !file.type.startsWith("image/") ||
+      file.type === "image/svg+xml" ||
+      file.type === "image/gif" ||
+      file.size < 200 * 1024
+    ) {
+      return file;
+    }
+
+    return new Promise((resolve) => {
+      const img = document.createElement("img");
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth || height > maxWidth) {
+            if (width > height) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            } else {
+              width = Math.round((width * maxWidth) / height);
+              height = maxWidth;
+            }
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return resolve(file);
+
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob(
+            (blob) => {
+              if (!blob || blob.size >= file.size) return resolve(file);
+              const optimized = new File([blob], file.name.replace(/\.[^.]+$/, ".webp"), {
+                type: "image/webp",
+                lastModified: Date.now(),
+              });
+              resolve(optimized);
+            },
+            "image/webp",
+            quality
+          );
+        };
+        img.onerror = () => resolve(file);
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => resolve(file);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileUpload = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file (JPG, PNG, WEBP, AVIF)");
+      return;
+    }
+
+    setIsUploadingImage(true);
+    const toastId = toast.loading("Optimizing & uploading category image...");
+    try {
+      const optimized = await optimizeImage(file);
+      const url = await uploadAdminCategoryImage(optimized);
+      setFormData((prev) => ({ ...prev, image: url }));
+      toast.success("Category image uploaded successfully!", { id: toastId });
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload category image", { id: toastId });
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -385,31 +478,148 @@ export default function AdminCategoriesPage() {
                 />
               </div>
 
-              {/* Image URL & Live Preview */}
-              <div className="space-y-1.5">
-                <label className="block text-[11px] font-black uppercase tracking-wider text-[#374151]">
-                  Image URL
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={formData.image}
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    placeholder="https://..."
-                    className="flex-1 bg-[#FAFAFA] border border-[#D1D5DB] text-xs font-mono text-[#111111] px-3 py-2 outline-none focus:border-black rounded-none"
-                  />
-                  {formData.image && (
-                    <div className="relative w-9 h-9 border border-[#D1D5DB] bg-[#F3F4F6] shrink-0 overflow-hidden">
-                      <Image
+              {/* Category Image Upload / URL */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] font-black uppercase tracking-wider text-[#374151]">
+                    Category Image
+                  </label>
+                  <div className="flex items-center gap-1 bg-[#F3F4F6] p-0.5 border border-[#E5E7EB]">
+                    <button
+                      type="button"
+                      onClick={() => setImageInputMode("upload")}
+                      className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                        imageInputMode === "upload"
+                          ? "bg-[#111111] text-white"
+                          : "text-[#4B5563] hover:text-black"
+                      }`}
+                    >
+                      <span className="flex items-center gap-1">
+                        <RiUploadCloud2Line className="text-xs" /> Upload Image
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageInputMode("url")}
+                      className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                        imageInputMode === "url"
+                          ? "bg-[#111111] text-white"
+                          : "text-[#4B5563] hover:text-black"
+                      }`}
+                    >
+                      <span className="flex items-center gap-1">
+                        <RiLink className="text-xs" /> Image URL
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileUpload(file);
+                  }}
+                  className="hidden"
+                />
+
+                {imageInputMode === "upload" ? (
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setIsDragging(true);
+                    }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setIsDragging(false);
+                      const file = e.dataTransfer.files?.[0];
+                      if (file) handleFileUpload(file);
+                    }}
+                    onClick={() => !isUploadingImage && fileInputRef.current?.click()}
+                    className={`border-2 border-dashed p-4 text-center cursor-pointer transition-colors ${
+                      isDragging
+                        ? "border-black bg-[#F5F5F5]"
+                        : "border-[#D1D5DB] bg-[#FAFAFA] hover:border-black hover:bg-white"
+                    } ${isUploadingImage ? "opacity-60 pointer-events-none" : ""}`}
+                  >
+                    <div className="flex flex-col items-center justify-center gap-1.5">
+                      {isUploadingImage ? (
+                        <>
+                          <RiLoader4Line className="text-2xl text-black animate-spin" />
+                          <p className="text-xs font-bold uppercase tracking-wider text-[#111111]">
+                            Uploading to Cloudinary...
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <RiUploadCloud2Line className="text-2xl text-[#4B5563]" />
+                          <p className="text-xs font-bold uppercase tracking-wider text-[#111111]">
+                            Click to upload or drag & drop photo
+                          </p>
+                          <p className="text-[10px] text-[#6B7280]">
+                            Direct upload to Cloudinary (JPG, PNG, WEBP, AVIF)
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <input
+                      type="url"
+                      value={formData.image}
+                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                      placeholder="https://images.unsplash.com/photo-..."
+                      className="w-full bg-[#FAFAFA] border border-[#D1D5DB] text-xs font-mono text-[#111111] px-3 py-2 outline-none focus:border-black rounded-none"
+                    />
+                    <p className="text-[10px] text-[#6B7280]">
+                      Paste any direct image URL (HTTPS)
+                    </p>
+                  </div>
+                )}
+
+                {/* Preview Thumbnail */}
+                {formData.image && (
+                  <div className="flex items-center gap-3 p-2.5 bg-[#F9FAFB] border border-[#E5E7EB]">
+                    <div className="relative w-12 h-12 bg-white border border-[#D1D5DB] shrink-0 overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
                         src={formData.image}
-                        alt="Preview"
-                        fill
-                        sizes="36px"
-                        className="object-cover"
+                        alt="Category Preview"
+                        className="w-full h-full object-cover"
                       />
                     </div>
-                  )}
-                </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-mono text-[#4B5563] truncate">
+                        {formData.image}
+                      </p>
+                      <p className="text-[9px] text-[#059669] font-bold uppercase tracking-wider mt-0.5">
+                        ✓ Image Attached
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider border border-[#D1D5DB] text-[#374151] hover:text-black hover:border-black bg-white transition-colors cursor-pointer"
+                        title="Upload New Image"
+                      >
+                        Change
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, image: "" })}
+                        className="p-1 text-[#DC2626] hover:bg-[#FEE2E2] transition-colors cursor-pointer border border-transparent hover:border-[#FCA5A5]"
+                        title="Remove Image"
+                      >
+                        <RiDeleteBinLine className="text-sm" />
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Additional Meta Fields */}

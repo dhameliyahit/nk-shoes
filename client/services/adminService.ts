@@ -311,6 +311,40 @@ export async function getAdminCategories(token?: string | null): Promise<AdminCa
   return await res.json();
 }
 
+export async function uploadAdminCategoryImage(file: File, token?: string | null): Promise<string> {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const resolvedToken =
+    token || (typeof window !== "undefined" ? localStorage.getItem("nk_shoes_token") : null);
+  const headers: Record<string, string> = {};
+  if (resolvedToken) {
+    headers["Authorization"] = `Bearer ${resolvedToken}`;
+  }
+
+  let res = await fetch(`${api.admin.categories}/upload`, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+
+  if (!res.ok) {
+    res = await fetch(`${api.categories}/upload`, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+  }
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to upload category image");
+  }
+
+  const data = await res.json();
+  return data.url || data.secure_url || "";
+}
+
 export async function createAdminCategory(payload: any, token?: string | null): Promise<AdminCategory> {
   const res = await fetch(api.admin.categories, {
     method: "POST",

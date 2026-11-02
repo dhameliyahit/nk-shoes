@@ -8,8 +8,28 @@ export const protect = async (req, res, next) => {
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
     try {
       token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, config.jwtAccessSecret);
+      let decoded;
+      try {
+        decoded = jwt.verify(token, config.jwtAccessSecret);
+      } catch (err) {
+        // If expired or error, check if user is admin - admin sessions never expire
+        if (err.name === "TokenExpiredError" || err.message?.includes("jwt expired")) {
+          const unverified = jwt.decode(token);
+          if (unverified && unverified.id) {
+            const adminUser = await User.findById(unverified.id).select("-password");
+            if (adminUser && adminUser.role === "admin") {
+              req.user = adminUser;
+              return next();
+            }
+          }
+        }
+        throw err;
+      }
+
       req.user = await User.findById(decoded.id).select("-password");
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authorized, user not found" });
+      }
       return next();
     } catch (error) {
       return res.status(401).json({ message: "Not authorized, token failed" });
